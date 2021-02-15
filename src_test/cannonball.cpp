@@ -1,11 +1,15 @@
+#define _USE_MATH_DEFINES
 #include "cannonball.h"
 
+#include <cmath>
+#include <iostream>
+
+#include "TextColor.h"
 #include "cannonball_viz.h"
 #include "utilities.h"
 
-double acclY() {
-    return -gravity;  // definert som en konstant i cannonball.h
-}
+double acclY() { return -9.81; }
+
 double velY(double initVelocityY, double time) {
     return initVelocityY + acclY() * time;
 }
@@ -15,135 +19,93 @@ double posX(double initPosition, double initVelocity, double time) {
 }
 
 double posY(double initPosition, double initVelocity, double time) {
-    return initPosition + initVelocity * time + 0.5 * pow(time, 2.0) * acclY();
+    return initPosition + initVelocity * time + acclY() * time * time / 2;
 }
 
 void printTime(double time) {
-    int hours = static_cast<int>(time) / 3600;
-    int minutes = (static_cast<int>(time) - 3600 * hours) / 60;
-    double seconds = time - hours * 3600 - minutes * 60;
-    cout << hours << " hours, " << minutes << " minutes and " << seconds
-         << " seconds\n";
+    int sec = (int)time;
+    int min = sec / 60;
+    int h = min / 60;
+    double restTime = time - sec;
+    sec = sec % 60;
+    min = min % 60;
+    cout << h << " hour(s), " << min << " minute(s), " << sec + restTime
+         << " second(s) \n";
 }
 
-double flightTime(double initVelocityY) {
-    return (-2.0 * initVelocityY) / acclY();
-}
+double flightTime(double initVelocityY) { return -2 * initVelocityY / acclY(); }
 
 double getUserInputTheta() {
-    cout << "Please enter an angle for the cannon: ";
     double theta;
+    cout << "Theta: ";
     cin >> theta;
-    while (theta < 0.1) {
-        cout << "The angle you chose was too small, please select a larger "
-                "one.\n";
-        cin >> theta;
-    }
     return theta;
 }
 
 double getUserInputAbsVelocity() {
-    cout << "Please enter a velocity for the cannon projectile: ";
-    double absVelocity;
-    cin >> absVelocity;
-    while (absVelocity < 0.1) {
-        cout << "The velocity you chose is to small, try again.\n";
-        cin >> (absVelocity);
-    }
-    return absVelocity;
+    double absVel;
+    cout << "Absolute velocity: ";
+    cin >> absVel;
+    return absVel;
 }
 
-double degToRad(double deg) { return (deg / 180) * pi; }
+double degToRad(double deg) { return deg / 180 * M_PI; }
 
 double getVelocityX(double theta, double absVelocity) {
-    return cos(degToRad(theta)) * absVelocity;
+    return absVelocity * cos(degToRad(theta));
 }
 
 double getVelocityY(double theta, double absVelocity) {
-    return sin(degToRad(theta)) * absVelocity;
+    return absVelocity * sin(degToRad(theta));
 }
 
 vector<double> getVelocityVector(double theta, double absVelocity) {
-    vector<double> velocityVector;
-
-    velocityVector.push_back(getVelocityX(theta, absVelocity));
-    velocityVector.push_back(getVelocityY(theta, absVelocity));
-    return velocityVector;
-
-    // Alternativt:
-    // return {
-    // 	getVelocityX(theta, absVelocity),
-    // 	getVelocityY(theta, absVelocity)
-    // };
+    return vector<double>{getVelocityX(theta, absVelocity),
+                          getVelocityY(theta, absVelocity)};
 }
 
 double getDistanceTraveled(double velocityX, double velocityY) {
-    double fTime = flightTime(velocityY);
-    double distanceTraveled = posX(0, velocityX, fTime);
-    return distanceTraveled;
-    // kort: return posX(0, velocityX, flightTime(velocityY))
+    return flightTime(velocityY) * velocityX;
 }
 
 double targetPractice(double distanceToTarget, double velocityX,
                       double velocityY) {
-    double error = distanceToTarget - getDistanceTraveled(velocityX, velocityY);
-    return abs(error);
+    return abs(getDistanceTraveled(velocityX, velocityY) - distanceToTarget);
 }
 
 void playTargetPractice() {
-    cout
-        << "*******Playing target practice!******\n"
-           "The goal of this game is to hit the target, you will be presented\n"
-           "with a target at some random distance (between 100 and 1000m)\n"
-           "from you. In order to hit a target you must specify an angle and\n"
-           "an initial velocity for the cannonball.\n\n";
-    constexpr int minTarget = 100;
-    constexpr int maxTarget = 1000;
-    constexpr int timeSteps = 20;
-    constexpr int maxTries = 10;
-    double distanceToTarget = randomWithLimits(minTarget, maxTarget);
-    double maxError = 5.0;
+    cout << "*** Cannonball game *** \n";
+    cout << "Target is between 100 and 1000! \n";
+    cout << "You have 10 attempts! \n";
     bool win = false;
-
-    cout << "Target is placed at " << distanceToTarget
-         << " m range\nGood luck!\n\n";
-
-    cout << fixed << setprecision(2);
-    for (int round = 0; round < maxTries; ++round) {
-        cout << "Round " << round + 1 << ":\n\n";
-        double angle, absVelocity, velocityX, velocityY;
-        angle = getUserInputTheta();
-        absVelocity = getUserInputAbsVelocity();
-        velocityX = getVelocityX(angle, absVelocity);
-        velocityY = getVelocityY(angle, absVelocity);
-
-        double error = targetPractice(distanceToTarget, velocityX, velocityY);
-        double distanceTraveled = getDistanceTraveled(velocityX, velocityY);
-        double elapsedTime = flightTime(velocityY);
-
-        cout << "\nYour shot went: " << distanceTraveled
-             << " m\nDistance from target: " << error << " m\n"
-             << "Elapsed time: ";
-        printTime(elapsedTime);
-
-        cannonBallViz(distanceToTarget, maxTarget, velocityX, velocityY,
-                      timeSteps);
-
-        if (error < maxError) {
+    int target = randomWithLimits(100, 1000);
+    for (int i = 1; i <= 10; i++) {
+        cout << "\nAttempt: " << i << endl;
+        double theta = getUserInputTheta();
+        double absVel = getUserInputAbsVelocity();
+        vector<double> vel = getVelocityVector(theta, absVel);
+        double error = targetPractice(target, vel[0], vel[1]);
+        double distance = getDistanceTraveled(vel[0], vel[1]);
+        cout << "Distance to target: " << error << endl;
+        if (distance - target < 0) {
+            cout << "Attempt too short!\n";
+        } else if (distance - target > 0) {
+            cout << "Attempt too far!\n";
+        }
+        cout << "Flight time: ";
+        printTime(flightTime(vel[1]));
+        cannonBallViz(target, 1000, vel[0], vel[1], 10);
+        if (error < 5) {
             win = true;
             break;
         }
-
-        if (distanceTraveled > distanceToTarget) {
-            cout << "You overshot the target.\n\n";
-        } else {
-            cout << "You didn't reach the target.\n\n";
-        }
     }
-
     if (win) {
-        cout << "Congratulations you won!\n";
+        cout << TextColor(ColorId::green)
+             << "\nYou won!!! Attempt is less then 5 meters from target!\n"
+             << TextColor();
     } else {
-        cout << "Too bad, you lost.\n";
+        cout << TextColor(ColorId::red) << "\nYou lost!!!\n" << TextColor();
     }
+    cin.get();
 }
