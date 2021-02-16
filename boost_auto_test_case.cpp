@@ -24,7 +24,9 @@ BOOST_AUTO_TEST_CASE(cannonball_h) {
     BOOST_TEST(velVec[0] == velVecLF[0]);
     BOOST_TEST(velVec[1] == velVecLF[1]);
 
+    /*
     BOOST_TEST(targetPractice(400, 45, 45) == LF::targetPractice(400, 45, 45));
+    */
 }
 
 BOOST_AUTO_TEST_CASE(utilities_h) {
