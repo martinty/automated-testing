@@ -2,6 +2,15 @@
 
 Testing C++ code with Boost Unit Test Framework.
 
+## Info
+
+- The zip-file has to be named handin.zip
+- The main()-function has to be placed in main.cpp or removed
+- Every header file needs the extension .h
+- Only works with oving03 (cannonball) at the moment
+- Every function has to be declared exactly the same as in the assignment
+- The delivered code has to be in a runnable state
+
 ## Nice to know
 
 To write the output of a command to a file, there are basically 10 commonly used ways.

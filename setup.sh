@@ -61,8 +61,8 @@ function run_debug() {
     echo "------------- Running test --------------"
     ./Debug-test --logger=HRF,all,stdout
     ./Debug-test --logger=HRF,all,result.log &>> result.log
-    cd $SCRIPTPATH
-    ./remove-path build/zip.log build/cmake.log build/make.log build/Debug/result.log
+    cd $SCRIPTPATH/build
+    ../remove-path ../info.txt zip.log cmake.log make.log Debug/result.log
 }
 
 function run_release() {
@@ -70,8 +70,8 @@ function run_release() {
     echo "------------- Running test --------------"
     ./Release-test --logger=HRF,all,stdout
     ./Release-test --logger=HRF,all,result.log &>> result.log
-    cd $SCRIPTPATH
-    ./remove-path build/zip.log build/cmake.log build/make.log build/Release/result.log
+    cd $SCRIPTPATH/build
+    ../remove-path ../info.txt zip.log cmake.log make.log Release/result.log 
 }
 
 function make_clean() {
