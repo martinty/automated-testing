@@ -55,16 +55,18 @@ function run_debug() {
     cd $SCRIPTPATH/build/Debug
     echo "------------- Running test --------------"
     ./Debug-test --logger=HRF,all,stdout
-    echo "Saving result.log"
-    ./Debug-test --logger=HRF,all,result.log
+    ./Debug-test --logger=HRF,all,result.log &>> result.log
+    cd $SCRIPTPATH
+    ./remove-path build/build.log build/Debug/result.log
 }
 
 function run_release() {
     cd $SCRIPTPATH/build/Release
     echo "------------- Running test --------------"
     ./Release-test --logger=HRF,all,stdout
-    echo "Saving result.log"
-    ./Release-test --logger=HRF,all,result.log
+    ./Release-test --logger=HRF,all,result.log &>> result.log
+    cd $SCRIPTPATH
+    ./remove-path build/build.log build/Release/result.log
 }
 
 function make_clean() {
