@@ -11,7 +11,6 @@ Testing C++ code with Boost Unit Test Framework.
 - Every function has to be declared exactly the same as in the assignment
 - The delivered code has to be in a runnable state
 
-
 ## Install Boost
 
 [Boost-1.75.0](http://www.linuxfromscratch.org/blfs/view/svn/general/boost.html)
