@@ -7,10 +7,17 @@ fi
 
 SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd)"
 
-function cmake_debug() {
+function init() {
     cd $SCRIPTPATH
     mkdir -p build
+    rm -rf src_test
+    mkdir -p src_test
+    unzip src_zip/handin.zip -d src_test |& tee build/zip.log
     rm -f src_test/main.cpp
+}
+
+function cmake_debug() {
+    init
     cd $SCRIPTPATH/build
     echo "------------- Running cmake -------------"
     cmake \
@@ -18,13 +25,11 @@ function cmake_debug() {
         -DCMAKE_CXX_COMPILER=/usr/bin/clang++ \
         -DCMAKE_BUILD_TYPE=Debug \
         .. \
-        |& tee build.log
+        |& tee cmake.log
 }
 
 function cmake_release() {
-    cd $SCRIPTPATH
-    mkdir -p build
-    rm -f src_test/main.cpp
+    init
     cd $SCRIPTPATH/build
     echo "------------- Running cmake -------------"
     cmake \
@@ -32,7 +37,7 @@ function cmake_release() {
         -DCMAKE_CXX_COMPILER=/usr/bin/clang++ \
         -DCMAKE_BUILD_TYPE=Release \
         .. \
-       |& tee build.log
+       |& tee cmake.log
 }
 
 function make_debug() {
@@ -40,7 +45,7 @@ function make_debug() {
     echo "------------- Running make --------------"
     # make -j8 StaticSrcTest
     # make -j8 StaticSrcLF
-    make -j8 Debug-test |& tee -a build.log
+    make -j8 Debug-test |& tee make.log
 }
 
 function make_release() {
@@ -48,7 +53,7 @@ function make_release() {
     echo "------------- Running make --------------"
     # make -j8 StaticSrcTest
     # make -j8 StaticSrcLF
-    make -j8 Release-test |& tee -a build.log
+    make -j8 Release-test |& tee make.log
 }
 
 function run_debug() {
@@ -57,7 +62,7 @@ function run_debug() {
     ./Debug-test --logger=HRF,all,stdout
     ./Debug-test --logger=HRF,all,result.log &>> result.log
     cd $SCRIPTPATH
-    ./remove-path build/build.log build/Debug/result.log
+    ./remove-path build/zip.log build/cmake.log build/make.log build/Debug/result.log
 }
 
 function run_release() {
@@ -66,7 +71,7 @@ function run_release() {
     ./Release-test --logger=HRF,all,stdout
     ./Release-test --logger=HRF,all,result.log &>> result.log
     cd $SCRIPTPATH
-    ./remove-path build/build.log build/Release/result.log
+    ./remove-path build/zip.log build/cmake.log build/make.log build/Release/result.log
 }
 
 function make_clean() {
