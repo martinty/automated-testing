@@ -7,8 +7,6 @@
 #include <ctime>
 #include <vector>
 
-using namespace std;
-
 #include "src_lf/cannonball_LF.h"
 #include "src_lf/utilities_LF.h"
 #include "src_test/cannonball.h"
@@ -16,11 +14,11 @@ using namespace std;
 
 namespace test {
 constexpr double err = 0.001;
-double diff(double a, double b) { return std::abs(a - b); }
-bool operator==(const vector<double>& lhs, const vector<double>& rhs) {
+bool operator==(const std::vector<double>& lhs,
+                const std::vector<double>& rhs) {
     if (lhs.size() != rhs.size()) return false;
     for (int i{0}; i < lhs.size(); i++) {
-        if (test::diff(lhs.at(i), rhs.at(i)) > err) return false;
+        if (std::abs(lhs.at(i) - rhs.at(i)) > test::err) return false;
     }
     return true;
 }
@@ -37,8 +35,8 @@ BOOST_AUTO_TEST_CASE(cannonball_h) {
                       test::err);
     BOOST_CHECK_CLOSE(getVelocityY(45, 45), LF::getVelocityY(45, 45),
                       test::err);
-    vector<double> velVec = getVelocityVector(45, 45);
-    vector<double> velVecLF = LF::getVelocityVector(45, 45);
+    std::vector<double> velVec = getVelocityVector(45, 45);
+    std::vector<double> velVecLF = LF::getVelocityVector(45, 45);
     BOOST_TEST(test::operator==(velVec, velVecLF));
     BOOST_CHECK_CLOSE(velVec[0], velVecLF[0], test::err);
     BOOST_CHECK_CLOSE(velVec[1], velVecLF[1], test::err);
@@ -48,9 +46,15 @@ BOOST_AUTO_TEST_CASE(cannonball_h) {
 }
 
 BOOST_AUTO_TEST_CASE(utilities_h) {
-    srand(10);
-    int randValue = randomWithLimits(10, 20);
-    srand(10);
-    int randValueLF = LF::randomWithLimits(10, 20);
-    BOOST_TEST(randValue == randValueLF);
+    std::srand(10);
+    int randValue1 = randomWithLimits(10, 20);
+    int randValue2 = randomWithLimits(50, 80);
+    int randValue3 = randomWithLimits(100, 1000);
+    std::srand(10);
+    int randValue1LF = LF::randomWithLimits(10, 20);
+    int randValue2LF = LF::randomWithLimits(50, 80);
+    int randValue3LF = LF::randomWithLimits(100, 1000);
+    BOOST_TEST(randValue1 == randValue1LF);
+    BOOST_TEST(randValue2 == randValue2LF);
+    BOOST_TEST(randValue3 == randValue3LF);
 }
