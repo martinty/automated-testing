@@ -1,3 +1,9 @@
+# General
+build
+src_test
+src_zip
+.vscode/settings.json
+
 # Prerequisites
 *.d
 
@@ -30,8 +36,3 @@
 *.exe
 *.out
 *.app
-
-# General
-build
-src_test
-src_zip
