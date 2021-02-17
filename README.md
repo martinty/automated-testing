@@ -9,7 +9,6 @@ Testing C++ code with Boost Unit Test Framework.
 - Every header file needs the extension .h
 - Only works with oving03 (cannonball) at the moment
 - Every function has to be declared exactly the same as in the assignment
-- The delivered code has to be in a runnable state
 
 ## Install Boost
 
